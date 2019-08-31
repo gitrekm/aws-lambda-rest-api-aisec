@@ -1,0 +1,95 @@
+service: serverless-rest-api-aisec
+
+frameworkVersion: ">=1.1.0 <2.0.0"
+
+provider:
+  name: aws
+  runtime: python3.6
+  environment:
+    DYNAMODB_TABLE: ${self:service}-${opt:stage, self:provider.stage}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE}"
+
+functions:
+  create:
+    handler: campaigns/create.create
+    events:
+      - http:
+          path: campaigns
+          method: post
+          cors: true
+
+  list:
+    handler: campaigns/list.list
+    events:
+      - http:
+          path: campaigns
+          method: get
+          cors: true
+
+  get:
+    handler: campaigns/get.get
+    events:
+      - http:
+          path: campaigns/{id}
+          method: get
+          cors: true
+
+  update:
+    handler: campaigns/update.update
+    events:
+      - http:
+          path: campaigns/{id}
+          method: put
+          cors: true
+
+  status:
+    handler: campaigns/status.status
+    events:
+      - http:
+          path: statuscampaigns/{status}
+          method: get
+          cors: true
+
+  etat:
+    handler: campaigns/etat.etat
+    events:
+      - http:
+          path: etatcampaigns/{etat}
+          method: get
+          cors: true
+
+  delete:
+    handler: campaigns/delete.delete
+    events:
+      - http:
+          path: campaigns/{id}
+          method: delete
+          cors: true
+
+resources:
+  Resources:
+    campaignsDynamoDbTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Retain
+      Properties:
+        AttributeDefinitions:
+          -
+            AttributeName: id
+            AttributeType: S
+        KeySchema:
+          -
+            AttributeName: id
+            KeyType: HASH
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:provider.environment.DYNAMODB_TABLE}
