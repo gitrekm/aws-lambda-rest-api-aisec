@@ -9,7 +9,7 @@ language: Python
 
 ## Structure
 
-This service has a separate directory for all the todo operations. For each operation exactly one file exists e.g. `campaigns/delete.py`. In each of these files there is exactly one function defined.
+This service has a separate directory for all the operations. For each operation exactly one file exists e.g. `campaigns/delete.py`. In each of these files there is exactly one function defined.
 
 ## Setup
 
